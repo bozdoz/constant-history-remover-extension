@@ -1,7 +1,0 @@
-{
-  "name": "extension-history",
-  "description": "Make history disappear",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT"
-}
