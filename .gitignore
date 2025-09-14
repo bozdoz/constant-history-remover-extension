@@ -1,0 +1,7 @@
+.DS_Store
+Archive.zip
+key.pem
+.env
+node_modules/
+web-ext-artifacts/
+dist/

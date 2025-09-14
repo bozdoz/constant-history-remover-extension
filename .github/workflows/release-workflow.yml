@@ -1,0 +1,54 @@
+name: Release Workflow
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
+
+# loosely: https://github.com/gorhill/uBlock/blob/master/.github/workflows/main.yml
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get release information
+        id: release_info
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_OUTPUT
+          echo "COMMITS=$(git log $(git tag --sort=v:refname | tail -2 | head -1)..HEAD --no-merges --format='%cs - %s (%cn) %h')" >> $GITHUB_OUTPUT
+      - name: Create ZIP
+        run: |
+          mkdir -p dist
+          pushd src
+          zip ../dist/constant-history-remover-${{ steps.release_info.outputs.VERSION }}.zip -r *
+          popd
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/constant-history-remover-${{ steps.release_info.outputs.VERSION }}.zip
+          fail_on_unmatched_files: true
+          body: ${{ steps.release_info.outputs.COMMITS }}
+      # - name: Publish to Firefox Add-ons
+      #   uses: kewisch/action-web-ext@v1
+      #   with:
+      #     api_key: ${{ secrets.AMO_JWT_ISSUER }}
+      #     api_secret: ${{ secrets.AMO_JWT_SECRET }}
+      #     source: src
+      #     channel: listed
+      # - name: Upload to Chrome Web Store
+      #   uses: chrome-webstore-upload/upload@v2
+      #   with:
+      #     client_id: ${{ secrets.CLIENT_ID }}
+      #     client_secret: ${{ secrets.CLIENT_SECRET }}
+      #     refresh_token: ${{ secrets.REFRESH_TOKEN }}
+      #     extension_id: ${{ secrets.EXTENSION_ID }}
+      #     zip_file: dist/constant-history-remover-${{ steps.release_info.outputs.VERSION }}.zip
+      - name: Debugging Outputs
+        if: ${{ failure() }}
+        run: |
+          ls *
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "Version: ${{ steps.release_info.outputs.VERSION }}"
