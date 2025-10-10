@@ -2,10 +2,10 @@
   "$schema": "https://json.schemastore.org/chrome-manifest.json",
   "manifest_version": 3,
   "name": "Constant History Remover",
-  "description": "Generally keeps no history when creating/removing tabs",
+  "description": "Keeps no history when creating/removing new windows",
   "version": "1.0.0",
   "homepage_url": "https://bozdoz.com",
-  "permissions": ["browsingData", "tabs"],
+  "permissions": ["history"],
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]

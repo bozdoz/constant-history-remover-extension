@@ -1,10 +1,19 @@
 const $ = typeof chrome === "undefined" ? browser : chrome;
 
-// Listen for tab updates
-$.tabs.onUpdated.addListener((_tabId, changeInfo, _tab) => {
-  if (changeInfo.status === "complete") {
-    $.browsingData.removeHistory({}, () => {
-      console.log("onUpdated", "History cleared");
+const openWindows = new Map();
+
+$.windows.onCreated.addListener((win) => {
+  openWindows.set(win.id, Date.now());
+});
+
+// preferring onRemoved, since onUpdated removes the "Prev" button
+$.windows.onRemoved.addListener((windowId) => {
+  if (openWindows.has(windowId)) {
+    const created = openWindows.get(windowId);
+
+    $.history.deleteRange({ startTime: created, endTime: Date.now() }, () => {
+      console.log("History cleared for window ID:", windowId);
+      openWindows.delete(windowId);
     });
   }
 });
