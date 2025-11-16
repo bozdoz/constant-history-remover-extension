@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "Constant History Remover",
   "description": "Keeps no history when creating/removing new windows",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage_url": "https://bozdoz.com",
   "permissions": ["history"],
   "background": {
